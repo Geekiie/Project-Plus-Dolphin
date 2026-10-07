@@ -7,10 +7,11 @@ import assert from 'node:assert/strict';
 import { loadConfig, launchSpec, root } from '../config.mjs';
 
 const config = loadConfig(), peers = [], dir = path.join(root, 'test-output');
+const matchmaking = process.env.STANDALONE_MATCH_TEST === '1';
 fs.mkdirSync(dir, { recursive: true });
 const started = Date.now(), room = 'smoke' + Math.random().toString(36).slice(2, 8);
 function start(name, joining) {
-  const spec = launchSpec({ ...config, name }, { room, joining, user: path.join(dir, 'user-' + name), headless: true });
+  const spec = launchSpec({ ...config, name }, { room, joining, matchmaking, user: path.join(dir, 'user-' + name), headless: true });
   Object.assign(spec.env, { YG_INPUT: path.resolve(root, 'test/network-inputs.txt'), YG_SCENES: '1', YG_THROTTLE: '1', ORCA_DIRECT: '0', ORCA_TEST_NET_DELAY_MS: '55' });
   spec.args.push('-C', 'Logger.Logs.ROLLBACK=True', '-C', 'Logger.Logs.NETPLAY=True', '-C', 'Logger.Options.Verbosity=3');
   const child = spawn(spec.executable, spec.args, { env: spec.env, cwd: spec.cwd, windowsHide: true });

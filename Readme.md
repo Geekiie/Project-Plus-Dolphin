@@ -1,4 +1,12 @@
-# Project+ Dolphin Fork
+# Project+ Dolphin — Standalone Rollback
+
+The `standalone-rollback` branch imports Orca 0.3.28 rollback into Project+ Dolphin and adds an independent launcher and self-hosted relay. It supports the official Project+ v3.2 Netplay files, private friend rooms, and basic casual matchmaking without YouGame.
+
+**[Setup, building, architecture, scope and credits → Standalone/README.md](Standalone/README.md)**
+
+This is an initial standalone fork. It does not claim Slippi feature parity, a ranked service, or replay playback. Original Project+ Dolphin features and credits follow.
+
+# Original Project+ Dolphin Fork
 
 ![Untitled-1](https://github.com/user-attachments/assets/3bfb148a-85d1-489d-96ae-1b7892acdc11)
 

@@ -50,6 +50,11 @@ endif()
 
 add_subdirectory(curl)
 
+if(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # Clang 23 flags the pinned curl's zero-length send of a dummy byte. It is never read.
+  target_compile_options(libcurl_object PRIVATE -clang:-Wno-uninitialized-const-pointer)
+endif()
+
 if(UNIX AND NOT MBEDTLS_FOUND)
   # HACK: Manually link with the mbedtls libraries.
   target_link_libraries(libcurl_static PRIVATE

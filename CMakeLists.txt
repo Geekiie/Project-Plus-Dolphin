@@ -233,6 +233,10 @@ elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
 endif()
 
 if(MSVC)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # clang-cl accepts the MSVC build but does not implement every MSVC-only driver flag.
+    add_compile_options(-Qunused-arguments)
+  endif()
   check_and_add_flag(EXCEPTIONS /EHsc)
   dolphin_compile_definitions(_DEBUG DEBUG_ONLY)
 
