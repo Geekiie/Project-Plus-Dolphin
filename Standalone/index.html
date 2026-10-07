@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project+ Standalone</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui;background:#10121b;color:#eee}body{max-width:1000px;margin:40px auto;padding:0 24px}h1{font-size:42px;margin-bottom:8px}p{color:#aeb4c7;line-height:1.6}.tag{font:12px monospace;color:#82e2c7}section{background:#191d2b;padding:24px;border:1px solid #30364b;border-radius:14px;margin:20px 0}label{display:block;color:#c8cee0;font-size:13px;margin:16px 0 7px}input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #41475d;border-radius:7px;background:#111520;color:#fff;font:inherit}button{padding:12px 20px;border:0;border-radius:8px;color:#10121b;background:#82e2c7;font:bold 15px system-ui;cursor:pointer;margin:12px 8px 0 0}button.secondary{background:#373d52;color:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:22px}#status{color:#82e2c7;white-space:pre-wrap}pre{background:#0b0e16;padding:16px;max-height:260px;overflow:auto;font:12px monospace;color:#bac6d9;white-space:pre-wrap}.room{font:28px monospace;letter-spacing:3px}details summary{cursor:pointer}a{color:#82e2c7}@media(max-width:650px){.row{grid-template-columns:1fr}h1{font-size:32px}}
+</style>
+<div class="tag">PROJECT+ · INDEPENDENT ROLLBACK</div><h1>Play on your own terms.</h1>
+<p>Launch Project+ from your own Brawl disc. Host a room or join a friend through a relay you control.</p>
+<section><div class="row"><div><label for="name">Player name</label><input id="name" maxlength="32"><label for="server">Relay server</label><input id="server" placeholder="https://relay.example.com"></div><div><label for="room">Friend's room code</label><input id="room" placeholder="6–12 lowercase letters or digits" maxlength="12"><label for="delay">Input delay (frames)</label><input id="delay" type="number" min="1" max="6" value="2"></div></div>
+<button id="match">Find a match</button><button id="host">Host a room</button><button id="join">Join friend</button><button class="secondary" id="offline">Offline play</button><button class="secondary" id="stop">Stop game</button>
+<p id="status" role="status">Ready.</p><div id="invite" class="room"></div>
+<p>The local relay is ready for testing on this computer. To play across the internet, both players enter the same HTTPS relay server and room code.</p></section>
+<section><details open><summary>Game files and settings</summary><p>Paths are detected from your installed files when available. Your ISO stays where it is. Use the official Project+ v3.2 Netplay launcher with its matching sd.raw next to it.</p>
+<label for="executable">Rollback emulator executable</label><input id="executable"><label for="disc">Your Brawl USA Rev 2 disc image</label><input id="disc"><label for="launcher">Project+ Netplay Launcher.dol</label><input id="launcher"><label for="relayKey">Relay access key (if required)</label><input id="relayKey" type="password"><label><input id="adapter" type="checkbox" style="width:auto"> GameCube USB adapter, port 1 (requires this fork's executable)</label><button class="secondary" id="save">Save settings</button></details></section>
+<section><details><summary>Session log</summary><pre id="log">No session started.</pre></details></section>
+<p>Built on Project+ Dolphin and the open-source Orca rollback engine. See <a href="https://github.com/Lrosias/orca-netplay">Orca source and credits</a>. Find a match pairs compatible players on your relay. Ranked ladders and replay browsing are not implemented.</p>
+<script>
+const token='__TOKEN__';let dirty=false;
+const keys=['executable','disc','launcher','server','name','relayKey','delay','adapter'];
+const el=id=>document.getElementById(id);
+async function api(url,body){const res=await fetch('/api/'+url,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});const result=await res.json();if(!res.ok)throw Error(result.error);return result;}
+const config=()=>Object.fromEntries(keys.map(k=>[k,k==='adapter'?el(k).checked:k==='delay'?Number(el(k).value):el(k).value]));
+for(const k of keys)el(k).oninput=()=>dirty=true;
+async function refresh(){try{const state=await api('state');if(!dirty)for(const k of keys){if(k==='adapter')el(k).checked=state.config[k]===true;else el(k).value=state.config[k]??'';}el('log').textContent=state.lines.join('\n')||'No session started.';for(const mode of ['match','host','join','offline'])el(mode).disabled=state.running;el('stop').disabled=!state.running;}catch(e){el('status').textContent=e.message;}}
+async function run(mode){try{el('status').textContent='Starting game…';const result=await api('start',{mode,room:el('room').value.trim(),config:config()});el('invite').textContent=result.room;el('status').textContent=mode==='match'?'Looking for a compatible opponent on your relay…':result.room?'Room '+result.room+' — waiting for the game to connect.':'Offline game started.';}catch(e){el('status').textContent=e.message;}refresh();}
+for(const mode of ['match','host','join','offline'])el(mode).onclick=()=>run(mode);
+el('stop').onclick=async()=>{await api('stop',{});el('status').textContent='Stopping game…';};
+el('save').onclick=async()=>{try{await api('config',config());el('status').textContent='Settings saved.';}catch(e){el('status').textContent=e.message;}};
+refresh();setInterval(refresh,2000);
+</script></html>

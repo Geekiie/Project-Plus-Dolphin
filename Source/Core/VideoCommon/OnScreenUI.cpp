@@ -440,6 +440,7 @@ void OnScreenUI::Finalize()
   perf_metrics.DrawImGuiStats(m_backbuffer_scale);
   DrawDebugText();
   OSD::DrawMessages();
+  OSD::DrawHostOverlay();
   DrawChallengesAndLeaderboards();
   ImGui::Render();
 
