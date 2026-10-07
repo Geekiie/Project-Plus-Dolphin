@@ -1,6 +1,6 @@
 # Validation — 2026-10-06
 
-Local Windows x64 validation of the standalone Project+ rollback fork. The compiled emulator reports source revision `6b12611`. The final launcher/service scripts additionally include the fixed-delay handshake and updated disc-tool filename lookup. Original upstream claims are not substituted for the results below.
+Local Windows x64 validation of the standalone Project+ rollback fork. The packaged emulator reports source revision `5f1af2a`. The launcher/service scripts include the fixed-delay handshake and updated disc-tool filename lookup. Original upstream claims are not substituted for the results below.
 
 ## Build
 
@@ -13,7 +13,7 @@ Local Windows x64 validation of the standalone Project+ rollback fork. The compi
 SHA-256 of the packaged emulator:
 
 ```text
-4cecb8b9b1d015de0eeccdbe32c3bf69738559d3e17ed232e627a1bbfa5a6d1f
+8273b781ebed4fa4922ad5d845d776623f716507f1dce4885f48d79666af4f48
 ```
 
 ## C++ suite
@@ -23,6 +23,8 @@ Binary/x64/Tests/tests.exe --gtest_filter=Orca*:*Rollback*:*SHA1*:*AES*:*Jit*:*P
 ```
 
 524 passed, 18 skipped, zero failures; 542 tests across 72 suites. Skips include YouGame live-service tests and optional disc/font/demo cases. These tests were deliberately not allowed to contact YouGame. The independent service was tested separately below.
+
+The C++ suite and RAM replay run below used revision `6b12611`. Subsequent emulator changes only enabled the standalone first-displayed-frame notification and reused upstream's embedded Windows process-exit path after normal emulation/device/renderer cleanup. The packaged revision was rebuilt and checked through rendered offline launch/stop and the two-instance integration test.
 
 ## Exact replay comparison
 
@@ -45,12 +47,12 @@ The guest downloaded an approximately 23.1 MB encrypted/compressed keyframe thro
 | Result | Host | Guest |
 |---|---:|---:|
 | Observed seconds with peer | 35 | 35 |
-| Rollbacks in those samples | 134 | 142 |
-| Replayed frames in those samples | 740 | 767 |
+| Rollbacks in those samples | 133 | 142 |
+| Replayed frames in those samples | 731 | 770 |
 | Latest sampled delay | 2 | 2 |
 | Latest sampled desync count | 0 | 0 |
 
-At leave, both logs reported 37 matching checksums. The guest left at an agreed frame and both returned to solo play. The script exited successfully. This is functional local integration coverage with simulated latency; it is not a cross-internet benchmark or a guarantee of performance on other hardware.
+These are the final integration results on packaged revision `5f1af2a`. Every sampled desync count was zero. At leave, both logs reported 37 matching checksums. The guest left at an agreed frame and both returned to solo play. Both emulators shut down with exit code 0, which the test explicitly asserts. The script exited successfully. This is functional local integration coverage with simulated latency; it is not a cross-internet benchmark or a guarantee of performance on other hardware.
 
 An earlier private-room integration test against the unchanged installed Orca also passed, validating the independent room and state-store protocol before the fork was compiled.
 
@@ -59,7 +61,7 @@ An earlier private-room integration test against the unchanged installed Orca al
 - Three Node tests pass: credential/test-environment stripping and safe argument construction; ticket/room/state-store behavior including incompatible-key and cross-room rejection; compatible-only automatic pairing.
 - `npm audit --omit=dev` reports zero known vulnerabilities in the launcher/service dependency set.
 - Current portable Node 22.23.3 was downloaded from nodejs.org and checked against its official SHA-256 manifest.
-- Browser UI verified detected paths, settings save, offline launch, and stop. The local package includes its own emulator, Node runtime, controller mapping, and copied Project+ loader/SD assets; the ISO is referenced in place.
+- Browser UI verified detected paths, settings save, offline launch, a rendered first frame with status `playing`, and clean stop with process exit code 0. The local package includes its own emulator, Node runtime, controller mapping, and copied Project+ loader/SD assets; the ISO is referenced in place.
 
 ## Not validated or implemented
 

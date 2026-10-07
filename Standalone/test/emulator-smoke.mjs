@@ -10,6 +10,7 @@ const config = loadConfig(), peers = [], dir = path.join(root, 'test-output');
 const matchmaking = process.env.STANDALONE_MATCH_TEST === '1';
 fs.mkdirSync(dir, { recursive: true });
 const started = Date.now(), room = 'smoke' + Math.random().toString(36).slice(2, 8);
+let completed = false;
 function start(name, joining) {
   const spec = launchSpec({ ...config, name }, { room, joining, matchmaking, user: path.join(dir, 'user-' + name), headless: true });
   if (path.basename(spec.executable).toLowerCase() === 'projectplusrollback.exe') {
@@ -61,14 +62,22 @@ try {
     const summary = { seconds: together.length, rollbacks: together.reduce((n,s)=>n+s.rb,0), resimulated: together.reduce((n,s)=>n+s.rbf,0), latest: together.at(-1) };
     assert.ok(summary.rollbacks > 0, 'Late inputs should exercise rollback');
     assert.equal(summary.latest.delay, 2, 'Explicit input delay must remain fixed');
+    assert.ok(together.every(s => s.ds === 0), 'No sampled desyncs during rollback play');
     fs.writeFileSync(path.join(dir, name + '.summary.json'), JSON.stringify(summary, null, 2));
     console.log(name, JSON.stringify(summary));
   }
   guest.child.stdin.write('leave\n');
   await until(() => guest.lines.includes('orca state left') && host.lines.some(l=>l.startsWith('orca state friend-left')), 30000, 'guest leave');
   console.log('PASS: independent relay, HTTP encrypted state transfer, rollback play, guest leave');
+  completed = true;
 } finally {
   for (const peer of peers) if (peer.exit === null) peer.child.stdin.write('quit\n');
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  const deadline = Date.now() + 8000;
+  while (peers.some(peer => peer.exit === null) && Date.now() < deadline)
+    await new Promise(resolve => setTimeout(resolve, 100));
   for (const peer of peers) if (peer.exit === null) peer.child.kill();
+  if (completed) {
+    for (const peer of peers) assert.equal(peer.exit, 0, 'Emulator must exit cleanly after quit');
+    console.log('PASS: both emulators shut down with exit code 0');
+  }
 }
