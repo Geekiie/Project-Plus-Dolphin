@@ -624,13 +624,17 @@ int main(const int raw_argc, char* raw_argv[])
   {
     // Covers every exit path, after all of Run's cleanup.
     Embed::Out(fmt::format("exit {}", code));
+  }
 #ifdef _WIN32
-    // The stdin reader may still hold stdin's lock, and the CRT's exit-time flush would wait on it.
-    // Everything that matters is written, so exit without that flush.
+  if (s_embedded || Orca::SessionActive())
+  {
+    // Run has shut down emulation, devices and the renderer. Windows session frontends can
+    // still have process-lifetime input/COM state; use the same exit path as embedded Orca,
+    // rather than run CRT global teardown while those callbacks are still present.
     std::fflush(stderr);
     _exit(code);
-#endif
   }
+#endif
   return code;
 }
 
