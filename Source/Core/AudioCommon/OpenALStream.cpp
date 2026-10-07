@@ -309,13 +309,13 @@ void OpenALStream::SoundLoop()
 
         for (u32 i = 0; i < rendered_frames * SURROUND_CHANNELS; ++i)
         {
-          dpl2[i] = dpl2[i] * std::numeric_limits<int>::max();
-          if (dpl2[i] > std::numeric_limits<int>::max())
+          const double sample = static_cast<double>(dpl2[i]) * std::numeric_limits<int>::max();
+          if (sample > std::numeric_limits<int>::max())
             surround_int32[i] = std::numeric_limits<int>::max();
-          else if (dpl2[i] < std::numeric_limits<int>::min())
+          else if (sample < std::numeric_limits<int>::min())
             surround_int32[i] = std::numeric_limits<int>::min();
           else
-            surround_int32[i] = static_cast<int>(dpl2[i]);
+            surround_int32[i] = static_cast<int>(sample);
         }
 
         palBufferData(m_buffers[next_buffer], AL_FORMAT_51CHN32, surround_int32.data(),

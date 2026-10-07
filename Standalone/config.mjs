@@ -10,9 +10,9 @@ export function defaults() {
   const cache = path.join(process.env.APPDATA || '', 'yougame-desktop/orca');
   const pick = (...paths) => paths.find(p => fs.existsSync(p)) || '';
   return {
-    executable: pick(path.resolve(root, '../Binary/x64/Release/ProjectPlusRollback.exe'), path.resolve(root, '../Binary/x64/ProjectPlusRollback.exe'), path.join(cache, 'current/Orca/Orca.exe')),
+    executable: pick(path.join(root, 'runtime/ProjectPlusRollback.exe'), path.resolve(root, '../Binary/x64/Release/ProjectPlusRollback.exe'), path.resolve(root, '../Binary/x64/ProjectPlusRollback.exe'), path.join(cache, 'current/Orca/Orca.exe')),
     disc: pick(path.join(install, 'Super Smash Bros. Brawl (USA) (Rev 2).iso')),
-    launcher: pick(path.join(cache, 'run/project-rollback/Project+ Netplay Launcher.dol')),
+    launcher: pick(path.join(root, 'assets/Project+ Netplay Launcher.dol'), path.join(cache, 'run/project-rollback/Project+ Netplay Launcher.dol')),
     server: 'http://127.0.0.1:4318', name: 'Player', relayKey: '', delay: 2, adapter: false
   };
 }

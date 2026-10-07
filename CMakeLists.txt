@@ -86,6 +86,7 @@ option(ENABLE_PULSEAUDIO "Enables PulseAudio sound backend" ON)
 option(ENABLE_CUBEB "Enables Cubeb sound backend" ON)
 option(ENABLE_LLVM "Enables LLVM support, for disassembly" ON)
 option(ENABLE_TESTS "Enables building the unit tests" ON)
+option(DOLPHIN_WARNINGS_AS_ERRORS "Treat MSVC-family compiler warnings as errors" ON)
 option(ENABLE_VULKAN "Enables vulkan video backend" ON)
 option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence, show the current game on Discord" ON)
 option(USE_MGBA "Enables GBA controllers emulation using libmgba" ON)
@@ -236,6 +237,9 @@ if(MSVC)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # clang-cl accepts the MSVC build but does not implement every MSVC-only driver flag.
     add_compile_options(-Qunused-arguments)
+    # Windows SDK aggregate fields intentionally omitted by designated initializers are zero.
+    add_compile_options(-clang:-Wno-missing-designated-field-initializers)
+    add_compile_options(-clang:-Wno-missing-field-initializers)
   endif()
   check_and_add_flag(EXCEPTIONS /EHsc)
   dolphin_compile_definitions(_DEBUG DEBUG_ONLY)
@@ -247,7 +251,11 @@ if(MSVC)
   add_compile_options(/W4)
 
   # Treat all warnings as errors
-  add_compile_options(/WX)
+  if(DOLPHIN_WARNINGS_AS_ERRORS)
+    add_compile_options(/WX)
+  else()
+    add_compile_options(/WX-)
+  endif()
 
   # Disable some warnings
   add_compile_options(

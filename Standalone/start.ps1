@@ -9,7 +9,8 @@ $running = $false
 try { $running = (Invoke-WebRequest -Uri 'http://127.0.0.1:4317/' -TimeoutSec 2).StatusCode -eq 200 } catch {}
 if (-not $running) {
     New-Item -ItemType Directory -Force -Path (Join-Path $taskRoot 'logs') | Out-Null
-    $nodeExe = (Get-Command node).Source
+    $nodeExe = Join-Path $taskRoot 'portable-node/node.exe'
+    if (-not (Test-Path -LiteralPath $nodeExe)) { $nodeExe = (Get-Command node).Source }
     Start-Process -FilePath $nodeExe -ArgumentList 'app.mjs' -WorkingDirectory $taskRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $taskRoot 'logs/launcher.log') -RedirectStandardError (Join-Path $taskRoot 'logs/launcher-error.log')
     Start-Sleep -Milliseconds 800
 }

@@ -13,6 +13,8 @@ The service supports private rooms, automatic casual pairing, input relaying, IC
 
 The first launch hashes the full disc for compatibility; later launches reuse the hash while the file's metadata is unchanged. Compressed images use `dolphin-tool verify` to hash their decompressed contents; the tool must sit beside the emulator. Loader and SD hashes are verified by the emulator every boot. Game assets and disc images are never committed or uploaded by this launcher.
 
+If the installed MSVC compiler is below the upstream minimum, `build-clang.py` builds with a portable LLVM toolchain and the existing Windows SDK. It requires Python and takes `--llvm <LLVM folder>` and `--vs <Visual Studio folder>`. The build uses `clang-cl` and Ninja, preserves the MSVC version guard, and disables the shared MSVC PCH for clang-cl. See VALIDATION.md for the toolchain actually exercised.
+
 Default controls are Orca's keyboard and SDL controller mappings. An existing local `GCPadNew.ini` is imported once if available. Your own mapping lives in `Standalone/user/Config/GCPadNew.ini`. The **GameCube USB adapter** checkbox uses physical adapter port 1 directly through Dolphin's libusb driver. The emulated controllers remain identical on both machines. On Windows, the adapter needs the same WinUSB driver as Dolphin/Slippi. Hardware adapter behavior requires testing with an attached controller.
 
 ## Play across the internet

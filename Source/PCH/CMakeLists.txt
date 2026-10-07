@@ -6,10 +6,17 @@
 add_library(use_pch INTERFACE)
 target_include_directories(use_pch INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # This MSVC PCH is shared across targets with different macros. clang-cl requires matching
+  # definitions, so compile ordinary headers rather than reuse an incompatible shared PCH.
+  return()
+endif()
+
 # Uncomment this return to disable PCH
 #return()
 
 add_library(build_pch pch.h pch.cpp)
+target_include_directories(build_pch PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # fmt/format.h is included in the PCH
 target_link_libraries(build_pch PUBLIC fmt::fmt)
