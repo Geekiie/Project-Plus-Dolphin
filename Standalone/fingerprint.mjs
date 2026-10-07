@@ -19,8 +19,9 @@ export async function fingerprint(c) {
     for await (const chunk of fs.createReadStream(c.disc, { highWaterMark: 4 * 1024 * 1024 })) hash.update(chunk);
     sha1 = hash.digest('hex');
   } else {
-    const tool = path.join(path.dirname(c.executable), process.platform === 'win32' ? 'dolphin-tool.exe' : 'dolphin-tool');
-    if (!fs.existsSync(tool)) throw new Error('Compressed discs require dolphin-tool beside the emulator. Use your ISO or build the dolphin-tool target.');
+    const tools = process.platform === 'win32' ? ['DolphinTool.exe', 'dolphin-tool.exe'] : ['project-plus-dolphin-tool', 'dolphin-tool'];
+    const tool = tools.map(name => path.join(path.dirname(c.executable), name)).find(file => fs.existsSync(file));
+    if (!tool) throw new Error('Compressed discs require dolphin-tool beside the emulator. Use your ISO or build the dolphin-tool target.');
     const result = await run(tool, ['verify', '-i', c.disc, '-a', 'sha1'], { windowsHide: true, timeout: 15 * 60 * 1000 });
     sha1 = result.stdout.trim().split(/\r?\n/).find(line => /^[a-f0-9]{40}$/i.test(line));
     if (!sha1) throw new Error('Dolphin could not fingerprint the disc image');
