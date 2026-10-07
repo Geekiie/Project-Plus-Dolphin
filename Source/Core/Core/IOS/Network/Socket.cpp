@@ -757,7 +757,7 @@ WiiSocket::ConnectingState WiiSocket::GetConnectingState() const
   Common::ScopeGuard guard([&state] { Common::RestoreNetworkErrorState(state); });
 
 #ifdef _WIN32
-  constexpr int (*get_errno)() = &WSAGetLastError;
+  int (*const get_errno)() = &WSAGetLastError;
 #else
   constexpr int (*get_errno)() = []() { return errno; };
 #endif

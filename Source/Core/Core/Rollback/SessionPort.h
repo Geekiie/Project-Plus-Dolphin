@@ -55,7 +55,7 @@ public:
   bool Resimulating() const { return m_resimulating; }
   // Drop-in: loads the host's keyframe as the state at the start of `frame`. Call from the
   // frame-boundary hook, like Load.
-  bool LoadImage(MachineImage image, int frame);
+  bool RestoreImage(MachineImage image, int frame);
 
   // The port of the running session, or null.
   static RingPort* Active();

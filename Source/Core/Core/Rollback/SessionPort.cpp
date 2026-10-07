@@ -111,10 +111,10 @@ void RingPort::SetCatchingUp(bool catching_up)
   }
 }
 
-bool RingPort::LoadImage(MachineImage image, int frame)
+bool RingPort::RestoreImage(MachineImage image, int frame)
 {
   m_saved_since_run = -1;
-  return m_ring.LoadImage(m_system, std::move(image), frame);
+  return m_ring.RestoreImage(m_system, std::move(image), frame);
 }
 
 void RingPort::SetResimulating(bool resimulating)

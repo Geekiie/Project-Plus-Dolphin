@@ -9,9 +9,9 @@
 #include <optional>
 #include <string.h>
 #ifdef _WIN32
-#include <iphlpapi.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <iphlpapi.h>
 typedef SSIZE_T ssize_t;
 #define SHUT_RDWR SD_BOTH
 #else

@@ -20,7 +20,7 @@ clearTimeout(timeout);
 fs.writeFileSync(path.join(dir, 'sync.log'), output);
 assert.equal(exit, 0, 'Sync test must finish normally');
 assert.ok(output.includes('-> scMelee'), 'Sync test must reach an actual match');
-assert.match(output, /0 RAM mismatches/, 'Every restored/replayed frame must match RAM exactly');
+assert.match(output, /Harness done at frame 2400:.*0 RAM mismatches \(PASS\)/, 'Every restored/replayed frame must match RAM exactly at completion');
 assert.ok(!output.includes('orca error '), 'No terminal emulation error');
 console.log(output.split(/\r?\n/).filter(line => /mismatches|Sync test|Harness ended|synctest/.test(line)).join('\n'));
 console.log('PASS: 2400-frame Project+ run, repeated five-frame rewind, exact RAM comparison');

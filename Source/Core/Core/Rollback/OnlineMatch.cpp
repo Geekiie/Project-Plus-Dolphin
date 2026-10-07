@@ -1516,7 +1516,7 @@ Load LoadKeyframe(Core::System& system, Match& match, int* frame_out)
   }
   nand->ReloadFst();
   const int frame = download->frame;
-  if (!match.port->LoadImage(std::move(download->image), frame))
+  if (!match.port->RestoreImage(std::move(download->image), frame))
   {
     ERROR_LOG_FMT(ROLLBACK, "Drop-in: loading keyframe frame {} into the ring failed", frame);
     StopEmulation(system, "Couldn't join: your friend's game state didn't load");
@@ -1873,7 +1873,7 @@ bool MaybeRestoreQueueImage(Core::System& system, Match& match)
   }
   nand->ReloadFst();
   const int frame = match.running + 1;
-  if (!match.port->LoadImage(std::move(image->image), frame))
+  if (!match.port->RestoreImage(std::move(image->image), frame))
   {
     StopEmulation(system, "Couldn't go back to your own game");
     Orca::Status::Error("internal", "Couldn't go back to your own game");

@@ -4,6 +4,8 @@ This branch ports Orca 0.3.28 into the Project+ Dolphin `2609-merge` branch, and
 
 The service supports private rooms, automatic casual pairing, input relaying, ICE signaling for direct UDP links, and encrypted keyframe uploads for joining an existing game. It uses no YouGame account, app, API, cookie or service. Both clients must use this same build and matching game files.
 
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the installation findings and the flow from your ISO through snapshots, rollback, networking and matchmaking.
+
 ## Run on Windows
 
 1. Install Node.js 22 or newer. Build the emulator using `build-windows.ps1` (Visual Studio 2026 with C++ tools and CMake), or use a packaged build of this branch.
@@ -43,6 +45,8 @@ node test/emulator-smoke.mjs
 The emulator smoke test needs your local game paths (auto-detected or saved in `local.json`) and the local relay running. It boots two headless, muted instances, joins through the HTTP keyframe store, injects 55 ms delay each way, plays scripted inputs, checks that both actually roll back, and tests leaving. It writes logs and summaries into ignored `test-output/`. It requires a two-instance-capable machine and takes roughly a minute. Use `STANDALONE_MATCH_TEST=1` to test casual pairing instead of a private room.
 
 The imported C++ test suite covers snapshots, rollback sessions, packets, drop-in and game UI. The exact command and observed results are recorded in [VALIDATION.md](VALIDATION.md).
+
+`node test/sync-test.mjs` additionally performs a 2,400-frame offline Project+ run with repeated five-frame rewinds and byte-for-byte RAM comparisons. It takes a few minutes and writes `test-output/sync.log`.
 
 ## Scope
 

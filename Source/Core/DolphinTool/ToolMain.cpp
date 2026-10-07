@@ -1,6 +1,10 @@
 // Copyright 2021 Dolphin Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <cstdlib>
 #include <iostream>
 #include <string>

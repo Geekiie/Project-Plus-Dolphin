@@ -3,6 +3,8 @@
 
 #include "Core/HW/Triforce/FZeroAX.h"
 
+#include <functional>
+
 #include <numeric>
 
 #include <fmt/ranges.h>

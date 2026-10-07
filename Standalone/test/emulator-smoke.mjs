@@ -26,7 +26,7 @@ function start(name, joining) {
       peer.lines.push(line);
       if (line.startsWith('orca stats ')) peer.stats.push(JSON.parse(line.slice(11)));
       else console.log(`${((Date.now() - started)/1000).toFixed(1)} ${name}: ${line}`);
-      if (line.startsWith('orca caps ')) child.stdin.write('caps join leave stats delay direct\n');
+      if (line.startsWith('orca caps ')) child.stdin.write('caps join leave stats delay direct\ndelay 2\n');
       if (line.startsWith('ready')) child.stdin.write('delay 2\n');
     }
   });
@@ -56,6 +56,7 @@ try {
     const together = peer.stats.filter(s => s.peers > 0);
     const summary = { seconds: together.length, rollbacks: together.reduce((n,s)=>n+s.rb,0), resimulated: together.reduce((n,s)=>n+s.rbf,0), latest: together.at(-1) };
     assert.ok(summary.rollbacks > 0, 'Late inputs should exercise rollback');
+    assert.equal(summary.latest.delay, 2, 'Explicit input delay must remain fixed');
     fs.writeFileSync(path.join(dir, name + '.summary.json'), JSON.stringify(summary, null, 2));
     console.log(name, JSON.stringify(summary));
   }

@@ -4,9 +4,9 @@
 #pragma once
 
 #ifdef _WIN32
-#include <iphlpapi.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <iphlpapi.h>
 
 typedef pollfd pollfd_t;
 
