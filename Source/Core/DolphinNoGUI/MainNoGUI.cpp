@@ -543,7 +543,7 @@ static int Run(const int argc, char* argv[], const Embed::Options& embed)
 
   // Tell the app "ready" once the first frame is on screen.
   Common::EventHook first_frame_hook;
-  if (embed.enabled)
+  if (embed.enabled || Orca::SessionActive())
   {
     first_frame_hook = GetVideoEvents().after_present_event.Register([](PresentInfo& info) {
       static std::atomic<bool> seen{false};
@@ -553,7 +553,8 @@ static int Run(const int argc, char* argv[], const Embed::Options& embed)
           static_cast<int>(info.frame_buffer_width), static_cast<int>(info.frame_buffer_height),
           Core::System::GetInstance().GetVideoInterface().GetTargetRefreshRate());
     });
-    Embed::StartReading();
+    if (embed.enabled)
+      Embed::StartReading();
   }
   const bool test_commands = !embed.enabled && Orca::GetEnv("ORCA_TEST_COMMANDS") == "1";
   if (test_commands)

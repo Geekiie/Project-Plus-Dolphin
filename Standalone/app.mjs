@@ -67,7 +67,10 @@ const server = http.createServer(async (req, res) => {
             if (line.startsWith('orca state ')) gameState = line.slice(11);
             if (line.startsWith('orca error ')) gameState = 'error: ' + line.slice(11);
             if (line.startsWith('orca caps ')) current.stdin.write(`caps join leave host pause delay perf direct\ndelay ${c.delay}\nping on\nperf fps\n`);
-            if (line.startsWith('ready')) current.stdin.write(`delay ${c.delay}\nping on\nperf fps\n`);
+            if (line.startsWith('ready')) {
+              if (body.mode === 'offline') gameState = 'playing';
+              current.stdin.write(`delay ${c.delay}\nping on\nperf fps\n`);
+            }
           }
         });
       }
